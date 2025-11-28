@@ -35,7 +35,7 @@ function RocketSim(motor)
     temp0 = 288.15
 
     if motor == "I"
-        println("Cesaroni_382I170-14A: ")
+        #println("Cesaroni_382I170-14A: ")
         T = DataFrame(CSV.File("./Cesaroni_382I170-14A.csv"))
         thrust = T[1,2]
         burnTime = maximum(T.Time)
@@ -43,7 +43,7 @@ function RocketSim(motor)
         propellantMass = 0.1875
         burnoutMass = 0.189
     elseif motor == "H"
-        println("AeroTech_HP-H195NT: ")
+        #println("AeroTech_HP-H195NT: ")
         T = DataFrame(CSV.File("./AeroTech_HP-H195NT.csv"))
         thrust = T[1,2]
         burnTime = maximum(T.Time)
@@ -110,5 +110,5 @@ function RocketSim(motor)
     mn = DataFrame(Time=t, Position=pos[:], Velocity=vel[:], Acceleration=accel[:]) 
     CSV.write("sim_data.csv", mn) 
 
-    println("The maximum height of the rocket is ", maximum(pos))
+    #println("The maximum height of the rocket is ", maximum(pos))
 end

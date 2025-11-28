@@ -3,7 +3,7 @@ include("./Kalman.jl")
 using CSV, DataFrames
 
 function testKalman(motor, test)
-    #generateSensor(motor)
+    generateSensor(motor)
 
     accelData = DataFrame(CSV.File("./accelerometer_data.csv"))
     altData   = DataFrame(CSV.File("./altimeter_data.csv"))
@@ -48,5 +48,5 @@ function testKalman(motor, test)
     mn = DataFrame(Time=altData.AltTime, Altitude=Xsaved[1, :])
     CSV.write("kalman_data.csv", mn)
 
-
+    return maxError, avgError
 end

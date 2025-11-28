@@ -11,8 +11,8 @@ function Kalman(z, u, test, x, P)
 
     H = [1 0]
 
-    Q = [0.01^2 0; 0 0.01^1]
-    R = reshape([0.25], 1, 1)
+    Q = [0.036 0; 0.042 0]
+    R = reshape([166.202], 1, 1)
 
     if z == 0
         x = F*x + G*u;

@@ -32,7 +32,7 @@ function generateSensor(motor)
     k = 2
     while k < length(tAlt)
         j = findfirst(isequal(tAlt[k]), T.Time)
-        altData[k] = T.Position[j] + 0.025*randn()
+        altData[k] = T.Position[j] + 0.25*randn()
         k = k+1
     end
     
