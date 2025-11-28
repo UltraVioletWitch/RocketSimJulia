@@ -106,5 +106,9 @@ function RocketSim(motor)
     if i < length(t)
         accel[i] = -1 * vel[i-1]
     end
+
+    mn = DataFrame(Time=t, Position=pos[:], Velocity=vel[:], Acceleration=accel[:]) 
+    CSV.write("sim_data.csv", mn) 
+
     println("The maximum height of the rocket is ", maximum(pos))
 end
