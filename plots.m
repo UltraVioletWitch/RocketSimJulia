@@ -5,6 +5,7 @@ plotAccelAlt = true
 plotAlt = true
 plotTrueAll = false
 plotTrueAlt = true
+plotKalman = true
 
 
 T = csvread("./accelerometer_data.csv");
@@ -27,7 +28,7 @@ end
 if plotTrueAlt
     T = csvread("./sim_data.csv");
     ylabel("Position (m), Velocity (m/s), Acceleration (m/s^2)")
-    plot(T(:,1), T(:,2), 'b-', 'LineWidth', width);
+    plot(T(:,1), T(:,2), 'k-', 'LineWidth', width);
     l = legend({"Position"});
     set(l, 'fontsize', 30)
 end
@@ -50,5 +51,9 @@ if plotAlt
     plot(T(:,1), T(:,2), 'r*', 'LineWidth', width);
     l = legend({"Position"});
     set(l, 'fontsize', 30)
+end
+if plotKalman
+    T = csvread("./kalman_data.csv");
+    plot(T(:,1), T(:,2), 'b-', 'LineWidth', width);
 end
 hold off

@@ -32,14 +32,14 @@ function generateSensor(motor)
     k = 2
     while k < length(tAlt)
         j = findfirst(isequal(tAlt[k]), T.Time)
-        altData[k] = T.Position[j] + 0.25*randn()
+        altData[k] = T.Position[j] + 0.025*randn()
         k = k+1
     end
     
     mn = DataFrame(AccelTime=tAccel, Position=posData[:], Velocity=velData[:], Acceleration=accelData[:])
     CSV.write("accelerometer_data.csv", mn)
 
-    mn = DataFrame(AltTime=tAlt, Altitiude=altData[:])
+    mn = DataFrame(AltTime=tAlt, Altitude=altData[:])
     CSV.write("altimeter_data.csv", mn)
 
 end
