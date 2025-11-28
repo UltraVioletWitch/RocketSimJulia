@@ -3,7 +3,7 @@ include("./Kalman.jl")
 using CSV, DataFrames
 
 function testKalman(motor, test)
-    #generateSensor(motor)
+    generateSensor(motor)
 
     accelData = DataFrame(CSV.File("./accelerometer_data.csv"))
     altData   = DataFrame(CSV.File("./altimeter_data.csv"))

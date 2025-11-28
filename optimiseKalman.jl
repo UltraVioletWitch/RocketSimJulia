@@ -8,7 +8,7 @@ function optimiseKalman(motor)
     minMaxError = 0
     mintest = 0
 
-    for test = 0.0:0.0001:.001
+    for test = 1:.1:3
         maxError, avgError = testKalman(motor, test)
         if avgError < minAvgError
             minAvgError = avgError

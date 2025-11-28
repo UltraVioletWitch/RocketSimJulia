@@ -33,7 +33,7 @@ function Kalman(z, u, test, x, P)
     #Q = zeros(6,6)
 
     #Q = test * Matrix(I, 6, 6)
-    R = reshape([0.688], 1, 1)
+    R = reshape([1.668], 1, 1)
 
     if z == 0
         x = F*x + G*u;
