@@ -1,27 +1,33 @@
-using CSV, DataFrames
+using CSV, DataFrames, LinearAlgebra
 
 function RocketSim(motor)
 
     h0 = 267
+    wind = [10 10 0]./2.237;
+    railHeight = 10/3.281
 
     frequency = 1000
     dt = 1/frequency
     time = 100
 
     t = 0:dt:time
-    accel = zeros(1, length(t))
-    accel[1] = 0.0
-    vel = zeros(1, length(t))
-    vel[1] = 0.0
-    pos = zeros(1, length(t))
-    pos[1] = 0.0001
+    accel = zeros(3, length(t))
+    accel[:, 1] = [0.0 0.0 0.0]
+    vel = zeros(3, length(t))
+    vel[:, 1] = [0.0 0.0 0.0]
+    pos = zeros(3, length(t))
+    pos[:, 1] = [0.0 0.0 0.0001]
+    angle = zeros(3, length(t))
+    angle[:, 1] = [90.0 90.0 0.0]
+    gyro = zeros(3, length(t))
+    gyro[:, 1] = [0.0 0.0 0.0]
     
     g = -9.81
     rocketMass = 1.5
     wetMass = 0
     motorMass = 0
     thrust = 0
-    force = 0
+    force = [0.0 0.0 0.0]
     drag = 0
     burnTime = 0
     paraD1 = 12/(2*39.37)
@@ -59,15 +65,26 @@ function RocketSim(motor)
     apogee = false
 
     i = 2
-    while pos[i-1] > 0 && i < length(t)
-        vel[i] = vel[i-1] + accel[i-1]*dt
-        pos[i] = pos[i-1] + vel[i-1]*dt
+    while pos[3, i-1] > 0 && i < length(t)
+        vel[:, i] = vel[:, i-1] + accel[:, i-1]*dt
+        pos[:, i] = pos[:, i-1] + vel[:, i-1]*dt
 
-        temp = temp0 - 0.0065 * (pos[i] + h0)
-        p = p0 * (1 - 22.558 * 10 ^ -6 * (pos[i] + h0)) ^ 4.2559
-        rho = rho0 * (1 - 22.558 * 10 ^ -6 * (pos[i] + h0)) ^ 5.2559
+        if apogee
+            angle[:, i] = [90.0 90.0 180]
+        elseif pos[3, i] < railHeight
+            angle[:, i] = [90.0 90.0 0.0]
+        else
+            relativeVel = vel[:, i] + wind[:]
+            angle[1, i] = acosd(relativeVel[1]/norm(relativeVel))
+            angle[2, i] = acosd(relativeVel[2]/norm(relativeVel))
+            angle[3, i] = acosd(relativeVel[3]/norm(relativeVel))
+        end
 
-        drag = 0.5*vel[i]*vel[i]*pi*rocketD*rocketD*rho*rocketCd
+        temp = temp0 - 0.0065 * (pos[3, i] + h0)
+        p = p0 * (1 - 22.558 * 10 ^ -6 * (pos[3, i] + h0)) ^ 4.2559
+        rho = rho0 * (1 - 22.558 * 10 ^ -6 * (pos[3, i] + h0)) ^ 5.2559
+
+        drag = 0.5*norm(vel[:, i])*norm(vel[:, i])*pi*rocketD*rocketD*rho*rocketCd
 
         if thrust != 0
             if t[i] in T.Time
@@ -75,26 +92,32 @@ function RocketSim(motor)
                 thrust = T.Thrust[j]
             end
 
-            force = thrust + g*wetMass - drag
-            accel[i] = force / wetMass
+            force[1] = (thrust - drag)*cosd(angle[1, i])
+            force[2] = (thrust - drag)*cosd(angle[2, i])
+            force[3] = (thrust - drag)*cosd(angle[3, i]) + g*wetMass
+            accel[:, i] = force[:] ./ wetMass
             #println("The height of the rocket is ", drag)
         elseif apogee
-            if pos[i-1] > 250
-                para = 0.5*vel[i]*vel[i]*paraCd*rho*pi*paraD1*paraD1
+            if pos[3, i-1] > 250
+                para = 0.5*vel[3, i]*vel[3, i]*paraCd*rho*pi*paraD1*paraD1
                 #println("The height of the rocket is ", para)
             else
-                para = 0.5*vel[i]*vel[i]*paraCd*rho*pi*paraD2*paraD2
+                para = 0.5*vel[3, i]*vel[3, i]*paraCd*rho*pi*paraD2*paraD2
             end
             
-            force = para + g*dryMass
-            accel[i] = force / dryMass
+            force[1] = 0
+            force[2] = 0
+            force[3] = -para*cosd(angle[3, i]) + g*dryMass
+            accel[:, i] = force[:] ./ dryMass
         else
-            force = g*dryMass - drag
-            accel[i] = force / dryMass
+            force[1] = -drag*cosd(angle[1, i])
+            force[2] = -drag*cosd(angle[2, i])
+            force[3] = -drag*cosd(angle[3, i]) + g*dryMass
+            accel[:, i] = force[:] ./ dryMass
             #println("The height of the rocket is ", pos[i-1])
         end
 
-        if pos[i] < pos[i-1]
+        if pos[3, i] < pos[3, i-1]
             ascent = false
             apogee = true
             #println("The height of the rocket is ", t[i])
@@ -104,10 +127,12 @@ function RocketSim(motor)
     end
 
     if i < length(t)
-        accel[i] = -1 * vel[i-1]
+        accel[:, i] = -1 * vel[:, i-1]
     end
 
-    mn = DataFrame(Time=t, Position=pos[:], Velocity=vel[:], Acceleration=accel[:]) 
+    mn = DataFrame(Time=t, PositionX=pos[1, :], PositionY=pos[2, :], PositionZ=pos[3, :],
+    VelocityX=vel[1, :], VelocityY=vel[2, :], VelocityZ=vel[3, :], 
+    AccelerationX=accel[1, :], AccelerationY=accel[2, :], AccelerationZ=accel[3, :]) 
     CSV.write("sim_data.csv", mn) 
 
     #println("The maximum height of the rocket is ", maximum(pos))

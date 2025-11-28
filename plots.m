@@ -19,16 +19,16 @@ hold on
 if plotTrueAll
     T = csvread("./sim_data.csv");
     ylabel("Position (m), Velocity (m/s), Acceleration (m/s^2)")
-    plot(T(:,1), T(:,2), 'b-', 'LineWidth', width);
-    plot(T(:,1), T(:,3), 'r-', 'LineWidth', width);
-    plot(T(:,1), T(:,4), 'g-', 'LineWidth', width);
+    plot(T(:,1), T(:,4), 'b-', 'LineWidth', width);
+    plot(T(:,1), T(:,7), 'r-', 'LineWidth', width);
+    plot(T(:,1), T(:,10), 'g-', 'LineWidth', width);
     l = legend({"Position", "Velocity", "Acceleration"});
     set(l, 'fontsize', 30)
 end
 if plotTrueAlt
     T = csvread("./sim_data.csv");
     ylabel("Position (m), Velocity (m/s), Acceleration (m/s^2)")
-    plot(T(:,1), T(:,2), 'k-', 'LineWidth', width);
+    plot(T(:,1), T(:,4), 'k-', 'LineWidth', width);
     l = legend({"Position"});
     set(l, 'fontsize', 30)
 end
