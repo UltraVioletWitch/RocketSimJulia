@@ -11,7 +11,7 @@ plotKalman = true
 T = csvread("./accelerometer_data.csv");
 set(gca, 'fontsize', 20)
 xlabel("Time (s)")
-width = 2;
+width = 1;
 
 figure(1)
 hold on
