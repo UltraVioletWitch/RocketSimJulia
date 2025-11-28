@@ -10,7 +10,7 @@ function testKalman(motor, test)
     trueData  = DataFrame(CSV.File("./sim_data.csv"))
 
     Xsaved = zeros(2, length(accelData.AccelTime))
-    Zsaved = zeros(1, length(accelData.AccelTime))
+    Zsaved = zeros(1, length(altData.AltTime))
     sumError = 0
     error = 0
     maxError = 0
@@ -21,7 +21,7 @@ function testKalman(motor, test)
     P = [1 0; 0 1];
 
     for k=1:length(accelData.AccelTime)
-        a = accelData.Acceleration[k]
+        a = accelData.AccelerationZ[k]
         alt = altData.Altitude[k]
 
         x, P = Kalman(alt, a, test, x, P)
@@ -29,9 +29,9 @@ function testKalman(motor, test)
         j = findfirst(isequal(altData.AltTime[k]), trueData.Time)
         #println(altData.AltTime[k] == trueData.Time[k])
 
-        if trueData.Position[j] > 0
-            sumError = sumError + abs(trueData.Position[j] - Xsaved[1, k])
-            error = abs(trueData.Position[j] - Xsaved[1,k])
+        if trueData.PositionZ[j] > 0
+            sumError = sumError + abs(trueData.PositionZ[j] - Xsaved[1, k])
+            error = abs(trueData.PositionZ[j] - Xsaved[1,k])
             avgError = (avgError * (k-1) + error) / k
             if error > maxError
                 maxError = error

@@ -43,7 +43,7 @@ if plotAccelAll
 end
 if plotAccelAlt
     T = csvread("./accelerometer_data.csv");
-    plot(T(:,1), T(:,2), 'g*', 'LineWidth', width);
+    plot(T(:,1), T(:,4), 'g*', 'LineWidth', width);
 end
 if plotAlt
     T = csvread("./altimeter_data.csv");
